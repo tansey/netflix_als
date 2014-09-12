@@ -2,6 +2,7 @@
 Implements Alternating Least Squares (ALS) to create a recommender system for a subset of the Netflix dataset.
 '''
 import numpy as np
+import h5py
 import argparse
 import scipy.io
 
@@ -18,6 +19,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Load data from file
-    data = scipy.io.loadmat(args.infile)
+    data = h5py.File(args.infile,'r') 
 
     print 'matrix: {0}'.format(data)
