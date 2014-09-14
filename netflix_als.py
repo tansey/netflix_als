@@ -1,6 +1,10 @@
 '''
 Implements Alternating Least Squares (ALS) to create a recommender system for a subset of the Netflix dataset.
 '''
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import cm, colors
+import matplotlib.pyplot as plt
 import numpy as np
 import h5py
 import argparse
@@ -49,6 +53,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--features', type=int, default=20, help='The number of latent features (k).')
     parser.add_argument('--L2', type=float, default=0.1, help='The L2 penalty parameter (lambda).')
+    parser.add_argument('--plot_results', default='results.pdf', help='The file where the results plot will be saved.')
 
     # Get the arguments from the command line
     args = parser.parse_args()
@@ -89,8 +94,8 @@ if __name__ == '__main__':
         # Track performance in terms of RMSE on both the testing and training sets
         train_error = sum_squared_error(training, U, M)
         test_error = sum_squared_error(testing, U, M)
-        # TODO: Calculate RMSE for test and train
-        testing_trace.append()
+        training_trace.append(np.sqrt(train_error / len(training.nonzeros()[0])))
+        testing_trace.append(np.sqrt(test_error / len(testing.nonzeros()[0])))
 
         # Track convergence
         prev_error = cur_error
@@ -103,4 +108,8 @@ if __name__ == '__main__':
         # Update the step counter
         cur_step += 1
 
-        
+    plt.figure()
+    plt.plot(np.arange(cur_step), np.array(training_trace), label='Training RMSE')
+    plt.plot(np.arange(cur_step), np.array(testing_trace), label='Testing RMSE')
+    plt.savefig(args.plot_results, bbox_inches='tight')
+    plt.clf()
